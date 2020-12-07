@@ -26,6 +26,13 @@ else
     curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --server https://kubemaster1:6443 --token-file /tmp/token --tls-san $(hostname) --bind-address=${current_ip} --advertise-address=${current_ip} --node-ip=${current_ip} --no-deploy=traefik" sh -
 fi
 
-# Wait for node to be ready and disable deployments on it
-sleep 15
-kubectl taint --overwrite node $(hostname) node-role.kubernetes.io/master=true:NoSchedule
+
+KubemasterNodesShouldNotRunWorkloads="false"
+if [[ $KubemasterNodesShouldNotRunWorkloads == "true" ]]
+then
+  # Wait for node to be ready and disable deployments on it
+  sleep 15
+  kubectl taint --overwrite node $(hostname) node-role.kubernetes.io/master=true:NoSchedule
+  # NOTE: this taint can be latter manually removed, to make the kubemasternode also run workloads, by executing:
+  # kubectl taint nodes kubemasterX node-role.kubernetes.io/master-
+fi

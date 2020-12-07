@@ -1,8 +1,16 @@
-MASTER_COUNT = 3
-NODE_COUNT = 3
-IMAGE = "ubuntu/bionic64"
+MASTER_COUNT        = 1
+NODE_COUNT          = 2
+IMAGE               = "ubuntu/bionic64"
+INSTALL_K3S_VERSION = 'v1.19.4+k3s1'
 
 Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |vb|
+    vb.linked_clone = true
+    vb.cpus = 2
+    vb.memory = "2048"
+    #vb.cpus = 4
+    #vb.memory = "8048"
+  end
 
   (1..MASTER_COUNT).each do |i|
     config.vm.define "kubemaster#{i}" do |kubemasters|
@@ -11,7 +19,7 @@ Vagrant.configure("2") do |config|
       kubemasters.vm.network  :private_network, ip: "10.0.0.#{i+10}"
       kubemasters.vm.provision "file", source: "./.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
       kubemasters.vm.provision "file", source: "./.ssh/id_rsa", destination: "/tmp/id_rsa"
-      kubemasters.vm.provision "shell", privileged: true,  path: "scripts/master_install.sh"
+      kubemasters.vm.provision "shell", privileged: true,  path: "scripts/master_install.sh", env: {INSTALL_K3S_VERSION:INSTALL_K3S_VERSION}
     end
   end
 
@@ -22,17 +30,17 @@ Vagrant.configure("2") do |config|
       kubenodes.vm.network  :private_network, ip: "10.0.0.#{i+20}"
       kubenodes.vm.provision "file", source: "./.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
       kubenodes.vm.provision "file", source: "./.ssh/id_rsa", destination: "/tmp/id_rsa"
-      kubenodes.vm.provision "shell", privileged: true,  path: "scripts/node_install.sh"
+      kubenodes.vm.provision "shell", privileged: true,  path: "scripts/node_install.sh", env: {INSTALL_K3S_VERSION:INSTALL_K3S_VERSION}
     end
   end
 
-  config.vm.define "front_lb" do |traefik|
-      traefik.vm.box = IMAGE
-      traefik.vm.hostname = "traefik"
-      traefik.vm.network  :private_network, ip: "10.0.0.30"   
-      traefik.vm.provision "file", source: "./scripts/traefik/dynamic_conf.toml", destination: "/tmp/traefikconf/dynamic_conf.toml"
-      traefik.vm.provision "file", source: "./scripts/traefik/static_conf.toml", destination: "/tmp/traefikconf/static_conf.toml"
-      traefik.vm.provision "shell", privileged: true,  path: "scripts/lb_install.sh"
-      traefik.vm.network "forwarded_port", guest: 6443, host: 6443
-  end
+# config.vm.define "front_lb" do |traefik|
+#     traefik.vm.box = IMAGE
+#     traefik.vm.hostname = "traefik"
+#     traefik.vm.network  :private_network, ip: "10.0.0.30"   
+#     traefik.vm.provision "file", source: "./scripts/traefik/dynamic_conf.toml", destination: "/tmp/traefikconf/dynamic_conf.toml"
+#     traefik.vm.provision "file", source: "./scripts/traefik/static_conf.toml", destination: "/tmp/traefikconf/static_conf.toml"
+#     traefik.vm.provision "shell", privileged: true,  path: "scripts/lb_install.sh"
+#     traefik.vm.network "forwarded_port", guest: 6443, host: 6443
+# end
 end
