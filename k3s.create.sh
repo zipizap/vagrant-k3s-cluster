@@ -47,14 +47,36 @@ launch_test_deployment() {
   kubectl get pods -o wide
 }
 
+helm_cleanup_repo_stable() {
+  # Helm: add repo stable
+  # Note: all charts in https://github.com/helm/charts/tree/master/stable
+  if helm repo list | grep stable &>/dev/null
+  then
+    helm repo remove stable
+  fi
+  #helm repo add stable https://charts.helm.sh/stable &&\
+  helm repo update
+}
+
+helm_install_my-docker-registry_using_PVClocalPath() {
+  "${__dir}/helm.my-docker-registry.install.sh"
+}
+
 main() {
   cd "${__dir}"
+  shw_info "== assure_dot_ssh_keys_exist =="
   assure_dot_ssh_keys_exist
 
+  shw_info "== vagrant up =="
   vagrant_up
 
   k3sKubeconfig_kubectl
     # ATP: kubectl can be use
+
+  helm_cleanup_repo_stable
+
+  #shw_info "== Helm: my-docker-registry =="
+  #helm_install_my-docker-registry_using_PVClocalPath 
 
   launch_test_deployment
   shw_info "== Execution completed successfully =="

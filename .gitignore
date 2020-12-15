@@ -1,3 +1,4 @@
-k3s.source
+k3s.kubeconfig.yaml
 ubuntu-bionic-18.04-cloudimg-console.log
 .vagrant/*
+.ssh
