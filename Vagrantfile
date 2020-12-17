@@ -1,15 +1,16 @@
 MASTER_COUNT        = 1
-NODE_COUNT          = 2
+NODE_COUNT          = 1
 IMAGE               = "ubuntu/bionic64"
 INSTALL_K3S_VERSION = 'v1.19.4+k3s1'
 
 Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.linked_clone = true
+    #vb.cpus = 2
+    #vb.memory = "2048"
+    #
     vb.cpus = 2
-    vb.memory = "2048"
-    #vb.cpus = 4
-    #vb.memory = "8048"
+    vb.memory = "4096"
   end
 
   (1..MASTER_COUNT).each do |i|

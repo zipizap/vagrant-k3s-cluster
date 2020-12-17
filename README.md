@@ -1,14 +1,19 @@
-# vagrant-k3s-cluster
-## Déploiement d'une infrastructure K3S avec Vagrant
 
-Ces scripts permettent de déployer un cluster Kubernetes fonctionnant dans Vagrant en exploitant K3S
+```
+# terminal 1
+vi Vagrantfile
+  # MASTER_COUNT (>=1) and NODE_COUNT (>=1)
+  # vb.cpus and vb.memory 
 
-Pour plus d'information sur le fonctionnement de ce dernier, rendez vous sur mon blog  : https://tferdinand.net/creer-un-cluster-kubernetes-local-avec-vagrant/
+./k3s.create.sh && ./istio.install.sh
 
----
+# terminal 2 (once k3s.source is updated by k3s.create.sh)
+source k3s.source && k9s
 
-## Deploying a K3S infrastructure with Vagrant
 
-These scripts allow the deployment of a Kubernetes cluster running in Vagrant using K3S.
+# if its usefull
+./istio.install.sh restoreSnapshotPreIstio_and_reinstall
+./istio.install.sh uninstall
 
-For more information on how it works, please visit my blog: https://tferdinand.net/en/create-a-local-kubernetes-cluster-with-vagrant/.
+
+```
