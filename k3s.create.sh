@@ -63,6 +63,15 @@ helm_install_my-docker-registry_using_PVClocalPath() {
 }
 
 main() {
+  ## USAGE:
+  #
+  ## For normal k3s:
+  # ./k3s.create.sh
+  #
+  ## For istio:
+  # export K3S_MASTER_ADDITIONAL_OPTS='--no-deploy=traefik'
+  # ./k3s.create.sh && ./istio.install.sh
+
   cd "${__dir}"
   shw_info "== assure_dot_ssh_keys_exist =="
   assure_dot_ssh_keys_exist
