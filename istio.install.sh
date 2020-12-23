@@ -100,6 +100,8 @@ main() {
   #
 
   cd "${__dir}"
+  
+  helm uninstall traefik -n kube-system || true
 
   if [[ "${1:-}" == "uninstall" ]]; then
     uninstall_istio

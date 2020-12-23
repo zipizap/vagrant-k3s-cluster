@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kubemaster#{i}" do |kubemasters|
       kubemasters.vm.box = IMAGE_PER_VM
       kubemasters.vm.hostname = "kubemaster#{i}"
-      kubemasters.vm.network  :private_network, ip: "10.0.0.#{i+10}"
+      kubemasters.vm.network  :private_network, ip: "10.0.0.#{i+10}", name: "vboxnet2"
       kubemasters.vm.provision "file", source: "./.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
       kubemasters.vm.provision "file", source: "./.ssh/id_rsa", destination: "/tmp/id_rsa"
       kubemasters.vm.provision "shell", privileged: true,  path: "scripts/master_install.sh", env: 
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kubenode#{i}" do |kubenodes|
       kubenodes.vm.box = IMAGE_PER_VM
       kubenodes.vm.hostname = "kubenode#{i}"
-      kubenodes.vm.network  :private_network, ip: "10.0.0.#{i+20}"
+      kubenodes.vm.network  :private_network, ip: "10.0.0.#{i+20}", name: "vboxnet2"
       kubenodes.vm.provision "file", source: "./.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
       kubenodes.vm.provision "file", source: "./.ssh/id_rsa", destination: "/tmp/id_rsa"
       kubenodes.vm.provision "shell", privileged: true,  path: "scripts/node_install.sh", env: {INSTALL_K3S_VERSION:INSTALL_K3S_VERSION}
